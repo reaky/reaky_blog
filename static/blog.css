@@ -1,0 +1,136 @@
+body {
+	background:transparent url(img/bg.jpg) no-repeat fixed left top;
+}
+#main_page {
+	background:#DDDDBB none repeat scroll 0% 0%;
+	font-family: Verdana, Helvetica, sans-serif;
+	font-size:12px;
+	margin: 5px 5px 5px 7%;
+	padding: 0px;
+	text-align: left;
+	width: 600px;
+	filter:alpha(opacity=85);
+	-moz-opacity:0.85;
+	opacity: 0.85; 
+}
+
+#navi_bar {
+	float: left;
+	width: 100%;
+	background: #BBD9EE;
+	line-height: normal;
+}
+
+#navi_bar ul li {
+	display: inline;
+	list-style: none;
+	margin: 10px;
+	font-size:23px;
+}
+.article {
+	margin: 10px 0px;
+	background: #ADDEEC none repeat scroll 0% 0%;
+}
+
+.article_title {
+	margin:0px;
+	padding:5px;
+	background: #ecf6d1 none repeat scroll 0% 0%;
+	font-size:23px;
+}
+.article_time {
+	float: right;
+	margin: -38px 1px;
+	padding:0px;
+	font-size:24px;
+}
+.article_time .article_time_month {
+	display: inline;
+	margin: 0px;
+}
+.article_time .article_time_day{
+	display: inline;
+	margin: 0px;
+	font-size:35px;
+}
+.article_content {
+	margin:0pt;
+	padding:5px;
+	font-size:13.5px;
+}
+#main_content {
+	margin:0px;
+	padding:0pt;
+}
+.article_comment {
+	margin: 5px;
+	padding: 2px;
+}
+.comment_body {
+	display:block;
+	margin: 15px 2px;
+	font-size: 14px;
+}
+.comment_auth {
+	display:inline;
+}
+.comment_content {
+	display:inline;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	padding:6px 3px;
+	background:#F3961C; 
+	position:relative; 
+}
+.comment_content span {
+	width:0; 
+	height:0; 
+	font-size:0; 
+	border-width:8px; 
+	border-style:solid; 
+	border-color:transparent #f3961c transparent transparent ; 
+	overflow:hidden; 
+	position:absolute; 
+	left:-14px; 
+	bottom:3px;
+}
+.article_comment textarea {
+	margin: 2px;
+	width: 575px;
+	height: 182px;
+}
+
+.article_comment input, textarea {
+	border-color:#9DC733;
+	border:1px solid #cce392;
+}
+input:hover, textarea:hover {border-color:#9DC733;}
+input:focus, textarea:focus {background:#F4FBE7;}
+
+#footer_bar {
+	margin:0pt;
+	padding:2px 0pt;
+	color:#999999;
+	text-align:center;
+	font-family:Arial,PmingLiu,sans-serif;
+	font-size:13px;
+}
+
+blockquote {
+	border:2px solid #cce392;
+	background:transparent url(img/blockquote.gif) no-repeat scroll left top;
+	text-indent:0px;
+	color:#666666;
+	margin:1em;
+	padding:0pt 0pt 5px 50px;
+	margin: 5px 10px;
+}
+
+pre, code {
+	display: block;
+	font-size: 9pt;
+	font-family: 'Courier New';
+	overflow: auto;
+	max-width: 530px;
+}

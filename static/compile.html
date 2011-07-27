@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh" lang="zh">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>reaky</title>
+<link type="text/css" rel="stylesheet" href="/static/main.css" media="screen" />
+<link rel="shortcut icon" type="image/ico" href="/static/img/favicon.ico" />
+<style>
+<!--
+h2.head {
+   text-align:center;
+   background: #4d8cba;
+   color: #fff;
+   border: none;
+   width: 100%;
+   font-weight: bold;
+   font-size: medium;
+   text-indent: 0.5em;
+   margin-top: 0;
+   padding: 0.1em 0;
+}
+h2.mainhead {
+   text-align:center;
+   background: #aa7;
+   color: #fff;
+   border: none;
+   width: 100%;
+   font-weight: bold;
+   font-size: medium;
+   text-indent: 0.5em;
+   margin-top: 0;
+   padding: 0.1em 0;
+}
+
+.white-block {
+   background: #fff;
+   color: #000;
+   padding: 0.2em 0.2em 0.4em 0.75em;
+   margin: -5px 4px 0.5em 4px; 
+   border: 1px solid #885;
+}
+
+#column1 {
+	background: #eec;
+	color: #000;
+	border: 1px solid #000;
+	float:left;
+	width: 250px;
+	margin-top:10px;
+    margin-buttom:10px;
+}
+
+#column2 {
+	background: #fff;
+	color: #000;
+	border: 1px solid #000;
+	float:left;
+	width: 60%;
+	margin-left:3px;
+	margin-top: 10px;
+    margin-buttom:10px;
+	background-color: #fff;
+}
+
+#column2 p {
+	margin-left:15px;
+	margin-right:15px;
+}
+
+h3 {
+   background: #fff;
+   color: #000000;
+   margin-top: 0.4em;
+}
+-->
+</style>
+</head>
+<body>
+<h2 style="background: #fff;color: #4d8cba;font-family: Times, "Times New Roman", serif;font-style: italic;font-weight: bold;margin-top: -6px;" align="center">To memorize the past time.</h2>
+
+<div id="column1">
+
+<h2 class="head">Reference</h2>
+<div class="white-block">
+<li><a title="Msdn" href="http://msdn2.microsoft.com/en-us/default.aspx">Msdn</a></li>
+<li><a href="http://www.g.cn">Google</a></li>
+<li><a href="http://www.csdn.net/">Csdn</a></li>
+</div>
+
+<h2 class="head">Title1</h2>
+<p class="white-block">Iste quidem veteres inter ponetur honeste, qui vel mense brevi vel toto est iunior anno. Utor permisso, caudaeque pilos ut equinae paulatim vello unum, demo etiam unum, dum cadat elusus ratione ruentis acervi, qui redit in fastos et annis miraturque.</p>
+<p style="margin: 5px;">Indignor quicquam reprehendi, non quia crasse compositum illepedeve putetur, sed quia nuper, nec veniam antiquis, sed honorem </p>
+
+<p class="white-block">Brevi vel toto est iunior anno. Utor permisso, caudaeque pilos ut equinae paulatim vello unum, demo etiam unum. Si meliora dies, ut vina, poemata reddit, scire velim, chartis perficit quotus pretium quotus arroget annus. Scriptor abhinc reddit misso annos centum qui decidit, inter perfectos veteresque referri debet an inter vilis atque perfectos ndemo etiam unum, dum cadat elusus ratione ruentis acervi, qui redit in fastos et virtutem aestimat annis miraturque nihil nisi quod.Ennius et sapines et fortis et alter Homerus, ut critici dicunt, leviter curare videtur</p>
+
+<p></p>
+</div>
+
+<div id="column2">
+<h2 class="mainhead">compile errors</h2>
+
+<h3 style="color: #900;">Let's remember the old errors!</h3>
+<li><p>//unresolved external symbol======&gt;  Those are fixed by adding gdi32.lib advapi32.lib comdlg32.lib while linking<br></p></li>
+<li><p>//fatal error LNK1158: cannot run 'cvtres.exe'=====&gt;   Install the .Net Framework 2.0 and add &quot;C:\WINDOWS.0\Microsoft.NET\Framework\v2.0.50727&quot; to path for the cvtress.exe(from resource to obj)<br></p></li>
+<li><p>//LINK : fatal error LNK1561: entry point must be defined==========&gt;/subsystem:console<br></p></li>
+<li><p>//error LNK2001: unresolved external symbol _SDL_main'===&gt;chang 'int main()' to 'int main(int argc, char **argv)'<br></p></li>
+<li><p>//_exit already defined in LIBCD.lib(crt0dat.obj)===&gt;set the built to multithreaded DLL (cl /MD)<br></p></li>
+<li>
+	<h4>[VS2005]由于应用程序的配置不正确，应用程序未能启动，重新安装应用程序可能会纠正这个问题</h4>
+	<div>&nbsp;&nbsp; 今天在准备发布用VS2005写的那个程序时，拷贝到我同事机器上，双击突然出现了“由于应用程序的配置不正确，应用程序未能启动，重新安装应用程序可能会纠正这个问题“，这个问题很让我意外，以前只出现过缺少DLL的情况，而这次出现这个问题，让我一时没办法。想想，无非是两个原因引起的，要么是他没有安装VS2005的原因，要么是我的程序里依赖了其它的一些库。于是百度一下，发现好多相关主题。我是按照这个帖子解决的：<br><br>
+		<p>在VS2005下用C++写的程序，在一台未安装VS2005的系统上，<br>用命令行方式运行，提示：<br>“系统无法执行指定的程序”<br>直接双击运行，提示：<br>“由于应用程序的配置不正确，应用程序未能启动，重新安装应用程序可能会纠正这个问题”<br><br>以前用VC6和VS2003的话, 如果缺少库文件，是会提示缺少“**.dll”，但是用VS2005却没有这样的提示。</p>
+		<p>自己实验了一下，感觉以下几种解决办法是可行的：<br>
+		方法一：<br>在类似C:\Program Files\Microsoft Visual Studio 8\VC\redi<br>st\Debug_NonRedist\x86\Microsoft.VC80.DebugCRT 下找到了下列文件：</p>
+		<p>msvcm80d.dll<br>msvcp80d.dll<br>msvcr80d.dll<br>Microsoft.VC80.DebugCRT.manifest</p>
+		<p>把这几个文件拷贝到目标机器上，与运行程序同一文件夹或放到system32下，就可以正确运行了。</p>
+		<p>其他release版、MFC程序什么的都是拷redist下相应文件夹下的文件就可以了,文件夹后都有标识!</p>
+		<p>方法二：<br>修改编译选项，将/MD或/MDd 改为 /MT或/MTd，这样就实现了对VC运行时库的静态链接，在运行时就不再需要VC的dll了。</p>
+		<p>方法三:</p>
+		<p>工程－》属性－》配置属性－》常规－》MFC的使用，选择“在静态库中使用mfc”<br>这样生成的exe文件应该就可以在其他机器上跑了。</p>
+		<p>方法四:</p>
+		<p>你的vc8安装盘上找到再分发包vcredist_xxx.exe和你的程序捆绑安装</p>
+</li>
+<h3 style="color: #900;">ToDo:</h3>
+<p>sth;</p>
+</div>
+</body>
+</html>

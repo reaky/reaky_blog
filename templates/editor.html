@@ -1,0 +1,16 @@
+<html>
+	<head>
+		<title>HTML editor</title>
+	</head>
+	<body>
+		<div id="editor" style="margin:20px">
+			<form action="/add" method="post" id="editorform">
+				<input type="text" name="title" value="{{ article.title }}" style="width:60%" tabindex="1" />
+				<input type="text" name="date" value="{{ article.date|date:"Y-m-d" }}" style="width:15%" tabindex="1" />
+				<textarea name="postcontent" tabindex="2" style="width:100%" rows="20">{{ article.content }}</textarea>
+				<input name="id" type="hidden" id="id" value="{{ article.key }}">
+				<input name="submit" type="submit" id="submit" tabindex="3" value="Submit" />
+			</form>
+		</div>
+	</body>
+</html>
