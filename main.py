@@ -1,232 +1,124 @@
 #!/usr/bin/env python
-import wsgiref.handlers
-
-from google.appengine.api import users
-from google.appengine.ext import webapp
-from google.appengine.ext import db
 import os, urllib2, datetime
-from google.appengine.ext.webapp import template
+from bottle import route, view, response, run
+import bottle
+import markdown
+import sqlite3
 
-class Article(db.Model):
-	title = db.StringProperty()
-	tags = db.StringListProperty(default=None)
-	content = db.TextProperty()
-	date = db.DateTimeProperty(auto_now_add=True)
-
-class Comment(db.Model):
-	article_key = db.StringProperty()
-	auth = db.StringProperty()
-	email = db.StringProperty()
-	content = db.TextProperty()
-	date = db.DateTimeProperty(auto_now_add=True)
-
-def check_user(self):
+def db_execute(sql_command):
+	conn = sqlite3.connect('./blog.db')
+	c = conn.cursor()
+	c.execute(sql_command)
+	conn.commit()
+	result = c.fetchall()
+	conn.commit()
+	c.close()
+	return result
+def init_blog():
+	db_execute('''create table posts(
+		id integer primary key,
+		title text not null,
+		tags text,
+		date not null,
+		content text not null)''')
+	db_execute('''create table comments(
+		id integer primary key,
+		post_id not null,
+		username text not null,
+		email text,
+		comment text, date)''')
+	db_execute('''insert into posts values
+			(null, 'title1', '', '2012-2-1', 'Hello World!')''')
+def check_user():
 	if not users.is_current_user_admin():
-		self.redirect('/norights')
+		redirect('/norights')
 
-class About(webapp.RequestHandler):
-	def get(self, sth=None):
-		template_values = {}
-		path = os.path.join(os.path.dirname(__file__), 'templates/about.html')
-		self.response.out.write(template.render(path, template_values))
+@route('/:filename#.+\.(css|js|ico|png|txt|html)#')
+def static(filename):
+	return bottle.static_file(filename, root='./static/')
 
-class Getqq(webapp.RequestHandler):
-	def get(self, sth=None):
-		req = urllib2.Request('http://v.t.qq.com/cgi-bin/weiboshow?f=s&tweetflag=1&fansflag=0&fansnum=30&name=reaky_yf&sign=c68092733fb05b975c2d13df9a9c936b85bfc53c&jsonp=?')
-		req.add_header('Referer', 'http://v.t.qq.com/')
-		r = urllib2.urlopen(req)
-		content = r.read()
-		import re
-		self.response.out.write('var qq='+content[2:-1]+';')
+@route('/')
+@view('blog')
+def bloglist():
+	posts = db_execute('select * from posts order by date DESC')
+	return dict(posts=posts)
 
-class Buzz(webapp.RequestHandler):
-	def get(self, sth=None):
-		template_values = {}
-		path = os.path.join(os.path.dirname(__file__), 'templates/buzz.html')
-		self.response.out.write(template.render(path, template_values))
+@route('/rss.xml')
+@view('rss')
+def blogrss():
+	posts = db_execute('select * from posts order by date DESC')
+	response.content_type = 'xml/rss'
+	return dict(posts=posts)
 
-class Blog(webapp.RequestHandler):
-	def get(self):
-		topage=1
-		size=5
-		if self.request.get('p') != '':
-			topage = int(self.request.get('p'))
+@route('list_comment')
+def list_comment(post_id='1'):
+	comments = db_execute('select * from comments where post_id=:1 order by date DESC', post_id)
+	return dict(comments=comments)
 
-		articles = db.GqlQuery("SELECT * FROM Article ORDER BY date DESC")
-		num = articles.count()
-		more = (1,0)[num%size==0]
-		numlist = range(1,num/size+more+1)
+@route('/add_comment')
+def add_comment(self):
+	return
 
-		comments = None
+@route('/admin')
+@view('admin')
+def admin():
+	check_user()
+	posts = db_execute('select * from posts order by date DESC')
+	return dict(posts=posts)
 
-		template_values = {
-			'articles': articles.fetch(size,(topage-1)*size),
-			'comments': comments,
-			'topage': topage,
-			'numlist': numlist,
-			'num': num/size+more,
-		}
+@route('/addpost')
+def addpost():
+	check_user()
+	post.title= request.get('title')
+	post.content = request.get('postcontent')
+	if request.get('date')!="":
+		post.date= datetime.datetime.strptime(request.get('date'),"%Y-%m-%d")
+	posts = db_execute('inser into posts values ()')
+	redirect('/admin')
 
-		path = os.path.join(os.path.dirname(__file__), 'templates/index.html')
-		self.response.out.write(template.render(path, template_values))
-
-class List_Comment(webapp.RequestHandler):
-	def get(self):
-		id = self.request.get('id')
-		comments=None
-		if id:
-			try:
-				comments = db.GqlQuery("SELECT * FROM Comment WHERE article_key=:1 ORDER BY date DESC", id)
-			except:
-				self.response.out.write('Sth wrong happened!')
-			else:
-				template_values = {
-					'comments': comments,
-				}
-				path = os.path.join(os.path.dirname(__file__), 'templates/comments.html')
-				self.response.out.write(template.render(path, template_values))
-		else:
-			self.response.out.write('id found!')
-
-class Add_Comment(webapp.RequestHandler):
-	def post(self):
-		comment = Comment()
-		comment.article_key = self.request.get('article_key')
-		comment.auth = self.request.get('auth')
-		comment.email = self.request.get('email')
-		comment.content = self.request.get('content')
-	#	article.date= self.request.get('date')
-		comment.put()
-	def get(self):
-		self.response.out.write('post only!')
-
-class Admin(webapp.RequestHandler):
-	def get(self):
-		check_user(self)
-		topage=1
-		size=30
-		if self.request.get('p') != '':
-			topage = int(self.request.get('p'))
-		articles = Article.all().order('-date')
-		num = articles.count()
-		more = (1,0)[num%size==0]
-		numlist = range(1,num/size+more+1)
-		template_values = {
-			'articles': articles.fetch(size,(topage-1)*size),
-			'topage': topage,
-			'numlist': numlist,
-			'num': num/size+more
-		}
-		path = os.path.join(os.path.dirname(__file__), 'templates/admin.html')
-		self.response.out.write(template.render(path, template_values))
-
-class Add(webapp.RequestHandler):
-	def post(self):
-		check_user(self)
-		self.response.out.write('Add post\n')
-		if self.request.get('id'):
-			article = db.get(self.request.get('id'))
-		else:
-			article = Article()
-		article.title= self.request.get('title')
-		article.content = self.request.get('postcontent')
-		if self.request.get('date')!="":
-			article.date= datetime.datetime.strptime(self.request.get('date'),"%Y-%m-%d")
-		article.put()
-		self.response.out.write('add successful!')
-		self.redirect('/admin')
-	def get(self):
-		self.response.out.write('Nothing to get!')
-		self.redirect('/')
-
-class Dele(webapp.RequestHandler):
-	def get(self):
-		check_user(self)
-		id = self.request.get('id')
-		if id:
-			check_user(self)
-			try:
-				article = db.get(id)
-				article.delete()
-			except:
-				self.response.out.write('Something Wrong ,WE are sorry for that!')
-			else:
-				self.response.out.write('delete successful!')
-				self.redirect('/admin')
-		else:
-			self.response.out.write('Nothing to dele!')
+@route('/deletepost/postid')
+def deletepost(post_id):
+	check_user()
+	id = request.get('id')
+	if id = None:
+		return
+	posts = db_execute('select * from posts order by date DESC')
+	redirect('/admin')
 		
-class Edit(webapp.RequestHandler):
-	def get(self):
-		check_user(self)
-		id = self.request.get('id')
-		if id:
-			try:
-				article = db.get(id)
-			#	article = db.GqlQuery("SELECT * FROM Article WHERE key=:1 ORDER BY date DESC", id)
-			except:
-				self.response.out.write('Something Wrong ,WE are sorry for that!')
-		else:
-			article=None
-		template_values = {
-			'article': article,
-		}
-
-		path = os.path.join(os.path.dirname(__file__), 'templates/editor.html')
-		self.response.out.write(template.render(path, template_values))
-
+@route('/editpost')
+@view('editor')
+def editpost(post_id):
+	check_user()
+	id = request.get('id')
+	if id = None:
+		return
+	posts = db_execute('select * from posts order by date DESC')
+	redirect('/admin')
 			
-class Norights(webapp.RequestHandler):
-	def gget(self):
-		if users.get_current_user() == None:
-			self.response.out.write("""
-			<html>
-			<body>
-			Only admin can do so. You even havn;t loggin?
-			<p><a href="""+users.create_login_url(self.request.uri)+""">Loggin</a>
-			<p><a href="javascript:history.back()">Go Back</a>
-			</body>
-			</html>""")
-		elif not users.is_current_user_admin():
-			self.response.out.write("""
-			<html>
-			<body>
-			You have no rights to do so!   """
-			+users.get_current_user().nickname()+"""   """+users.get_current_user().email()
-			+"""<p><a href="javascript:history.back()">Go Back</a>
-			<a href="""+users.create_logout_url(self.request.uri)+""">Logout</a>
-			</body>
-			</html>""")
-		else:
-			self.redirect('/')
-	def get(self):
-		article = db.get("agVyZWFreXIPCxIHQXJ0aWNsZRjx_AQM")
-		comments = None
-		login_url = users.create_login_url(self.request.uri)
-		template_values = {
-			'article': article,
-			'comments': comments,
-			'login_url': login_url,
-		}
-		path = os.path.join(os.path.dirname(__file__), 'templates/norights.html')
-		self.response.out.write(template.render(path, template_values))
+@route('/norights')
+def nnorights(self):
+	return 'Only admin can do so.  <p><a href="javascript:history.back()">Go Back</a>'
 
-def main():
-	application = webapp.WSGIApplication(
-		[('/', Blog),
-			('/blog', Blog),
-			('/about', About),
-			('/buzz', Buzz),
-			('/getqq', Getqq),
-			('/listcomment', List_Comment),
-			('/addcomment', Add_Comment),
-			('/admin', Admin),
-			('/add',Add),
-			('/edit', Edit),
-			('/dele', Dele),
-			('/norights', Norights)],
-		debug=True)
-	wsgiref.handlers.CGIHandler().run(application)
+@route('/guestbook')
+@view('blog')
+def guestbook():
+	posts = db_execute('select * from posts where id=1 order by date DESC')
+	return dict(posts=posts)
 
-if __name__ == "__main__":
-	main()
+@route('/about')
+def about():
+	return bottle.static_file('templates/about.html')
+
+def getqq():
+	req = urllib2.Request('http://v.t.qq.com/cgi-bin/weiboshow?f=s&tweetflag=1&fansflag=0&fansnum=30&name=reaky_yf&sign=c68092733fb05b975c2d13df9a9c936b85bfc53c&jsonp=?')
+	req.add_header('Referer', 'http://v.t.qq.com/')
+	r = urllib2.urlopen(req)
+	content = r.read()
+	import re
+	response.out.write('var qq='+content[2:-1]+';')
+
+@route('/buzz')
+def buzz():
+	return bottle.static_file('templates/buzz.html')
+
+run(host='0.0.0.0', port=8080)
