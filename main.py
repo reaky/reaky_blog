@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, urllib2, datetime
-from bottle import route, view, response, run
+from bottle import route, view, response, run, error
 import bottle
 import markdown
 import sqlite3
@@ -33,14 +33,12 @@ def check_user():
 	if not users.is_current_user_admin():
 		redirect('/norights')
 
-@route('/:filename#.+\.(css|js|ico|png|txt|html)#')
-def static(filename):
-	return bottle.static_file(filename, root='./static/')
 
 @route('/')
+@route('/show/<post_id:int>')
 @view('blog')
-def bloglist():
-	posts = db_execute('select * from posts order by date DESC')
+def bloglist(post_id=0):
+	posts = db_execute('select * from (select * from posts where id > 1 order by date DESC) LIMIT 5')
 	return dict(posts=posts)
 
 @route('/rss.xml')
@@ -103,7 +101,7 @@ def guestbook():
 
 @route('/about')
 def about():
-	return bottle.static_file('templates/about.html')
+	return bottle.static_file('about.html', root='./views/')
 
 def getqq():
 	req = urllib2.Request('http://v.t.qq.com/cgi-bin/weiboshow?f=s&tweetflag=1&fansflag=0&fansnum=30&name=reaky_yf&sign=c68092733fb05b975c2d13df9a9c936b85bfc53c&jsonp=?')
@@ -115,6 +113,15 @@ def getqq():
 
 @route('/buzz')
 def buzz():
-	return bottle.static_file('templates/buzz.html')
+	return bottle.static_file('buzz.html', root='./views/')
 
-run(host='0.0.0.0', port=80)
+#@route('/static/<filename:path:re:.*\.(css|js|ico|png|txt|html)>#')
+@route('/static/<filename:path>')
+def server_static(filename):
+	return bottle.static_file(filename, root='./static/')
+
+#@error(404)
+#def error404(error):
+#	return 'Nothing here, sorry'
+
+run(host='0.0.0.0', port=8080)
