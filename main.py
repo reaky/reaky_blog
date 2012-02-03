@@ -80,8 +80,6 @@ def addpost():
 def deletepost(post_id):
 	check_user()
 	id = request.get('id')
-	if id = None:
-		return
 	posts = db_execute('select * from posts order by date DESC')
 	redirect('/admin')
 		
@@ -90,8 +88,6 @@ def deletepost(post_id):
 def editpost(post_id):
 	check_user()
 	id = request.get('id')
-	if id = None:
-		return
 	posts = db_execute('select * from posts order by date DESC')
 	redirect('/admin')
 			
