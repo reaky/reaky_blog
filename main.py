@@ -117,4 +117,4 @@ def getqq():
 def buzz():
 	return bottle.static_file('templates/buzz.html')
 
-run(host='0.0.0.0', port=int(sys.argv[1] if len(sys.argv) >1 else 80)
+run(host='0.0.0.0', port=80)
