@@ -124,4 +124,4 @@ def server_static(filename):
 #def error404(error):
 #	return 'Nothing here, sorry'
 
-run(host='0.0.0.0', port=8080)
+run(host='0.0.0.0', port=80)
