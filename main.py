@@ -45,6 +45,14 @@ class Buzz(webapp.RequestHandler):
 		path = os.path.join(os.path.dirname(__file__), 'templates/buzz.html')
 		self.response.out.write(template.render(path, template_values))
 
+class Export(webapp.RequestHandler):
+	def get(self):
+		articles = db.GqlQuery("SELECT * FROM Article ORDER BY date DESC")
+		template_values = {
+			'articles': articles.fetch(1000,0),
+		}
+		path = os.path.join(os.path.dirname(__file__), 'templates/export.html')
+		self.response.out.write(template.render(path, template_values))
 class Blog(webapp.RequestHandler):
 	def get(self):
 		topage=1
@@ -224,6 +232,7 @@ def main():
 			('/add',Add),
 			('/edit', Edit),
 			('/dele', Dele),
+			('/export', Export),
 			('/norights', Norights)],
 		debug=True)
 	wsgiref.handlers.CGIHandler().run(application)
