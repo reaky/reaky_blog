@@ -10,7 +10,7 @@
 <div id="navi_bar">
 	<ul>
 		<li><a id="navi_about" href="/about"><span>About</span></a></li>
-		<li><a id="navi_GooglePlus" href=""><span>+Reaky</span></a></li>
+		<li><a id="navi_GooglePlus" href="https://plus.google.com/104418721144979799988"><span>+Reaky</span></a></li>
 		<li><a id="navi_blog" href="/"><span>Blog</span></a></li>
 	</ul>
 </div>
@@ -19,7 +19,9 @@
 <div class="article">
 	<div class="article_title">{{ article[1] }}</div>
 	<div class="article_time">{{ article[3][2:-9] }}</div>
-	<div class="article_content">{{ article[4] }}</div>
+	<div class="article_content">{{ article[4] }}
+	<script type="text/javascript">document.write(unescape(article[4]));</script>
+	</div>
 </div>
 %end
 <div class="article_comment">

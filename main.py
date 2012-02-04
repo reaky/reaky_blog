@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 import os, urllib2, sys
-from datetime import datetime
-from bottle import route, post, view, response, request, run, redirect, error
-import bottle
-import markdown
 import sqlite3
+import markdown2
+from urllib import unquote
+from datetime import datetime
+from bottle import route, post, view, response, request, run, redirect, error, static_file
 
 def db_execute(sql_command, sql_parameter=''):
 	conn = sqlite3.connect('./blog.db')
+	conn.text_factory = str
 	c = conn.cursor()
 	try:
 		c.execute(sql_command, sql_parameter)
@@ -47,10 +48,10 @@ def check_user():
 
 @route('/')
 @route('/show/<post_id:int>')
-@view('blog')
+@view('blog', template_settings={'noescape':True})
 def bloglist(post_id=0):
 	posts = db_execute("SELECT * FROM (SELECT * FROM posts WHERE id > ? ORDER BY date DESC) LIMIT 50", (post_id,))
-	return dict(posts=posts)
+	return dict(posts=[(1,'tt',None,'','<a>cccc</a>')])
 
 @route('/sally')
 @route('/sally/show/<post_id:int>')
@@ -105,6 +106,7 @@ def updatepost(post_id=0):
 	#else:
 		#prevent wrong input
 		#date= datetime.strptime(date,"%Y-%m-%d")
+	content = unquote(markdown2.markdown(content.decode('utf-8')).encode('utf-8'))
 	if post_id == 0:
 		posts = db_execute("INSERT INTO posts (title, content, date) VALUES ('%s', '%s', datetime('%s'))"%(title, content, date))
 	else:
@@ -131,7 +133,7 @@ def guestbook():
 
 @route('/about')
 def about():
-	return bottle.static_file('about.html', root='./views/')
+	return static_file('about.html', root='./views/')
 
 def getqq():
 	req = urllib2.Request('http://v.t.qq.com/cgi-bin/weiboshow?f=s&tweetflag=1&fansflag=0&fansnum=30&name=reaky_yf&sign=c68092733fb05b975c2d13df9a9c936b85bfc53c&jsonp=?')
@@ -143,7 +145,7 @@ def getqq():
 
 @route('/static/<filename:path:re:.*\.(css|js|ico|png|txt|html)>')
 def server_static(filename):
-	return bottle.static_file(filename, root='./static/')
+	return static_file(filename, root='./static/')
 
 @error(404)
 def error404(error):

@@ -14,7 +14,7 @@
 </ul></div>
 <div id="main_content">
 <div class="post">
-<span><a href="/edit">Add a new one</a></span><br />
+<span><a href="/addpost">Add a new one</a></span><br />
 %for article in posts:
 <span>{{ article[1] }}</span>
 <span><a href="/editpost/{{ article[0] }}" title="edit this article">&nbsp;&nbsp;*Edit</a></span>
