@@ -31,7 +31,9 @@ body {
 	margin: 10px 0px;
 	background: #ADDEEC none repeat scroll 0% 0%;
 }
-
+.article_key {
+	visibility: hidden;
+}
 .article_title {
 	margin:0px;
 	padding:5px;
@@ -68,20 +70,28 @@ body {
 }
 .comment_body {
 	display:block;
-	margin: 15px 2px;
+	margin: 3px 2px;
 	font-size: 14px;
 }
 .comment_auth {
-	display:inline;
+	display:inline-block;
+	width: 50px;
+}
+.comment_date {
+	display:inline-block;
+	color: grey;
+	float: right;
 }
 .comment_content {
-	display:inline;
-	border-radius:5px;
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-	padding:6px 3px;
-	background:#F3961C; 
-	position:relative; 
+	display:inline-block;
+	width: 350px;
+	border-radius:3px;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	padding: 5px;
+	margin: 3px 10px;
+	background:#CCCCCC; 
+	position:relative;
 }
 .comment_content span {
 	width:0; 

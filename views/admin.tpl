@@ -7,24 +7,27 @@
 <link type="text/css" rel="stylesheet" href="/static/blog.css" media="screen" />
 </head>
 <body><div id="main_page">
-<div id="navi_bar"><ul>
-	<li><a id="navi_about" href="/about"><span>About</span></a></li>
-	<li><a id="navi_buzz" href="/buzz"><span>Buzz</span></a></li>
-	<li><a id="navi_blog" href="/blog"><span>Blog</span></a></li>
-</ul></div>
+<div id="navi_bar">
+	<ul>
+		<li><a id="navi_about" href="/about"><span>About</span></a></li>
+		<li><a id="navi_GooglePlus" href="https://plus.google.com/104418721144979799988"><span>+Reaky</span></a></li>
+		<li><a id="navi_blog" href="/"><span>Blog</span></a></li>
+	</ul>
+</div>
 <div id="main_content">
 <div class="post">
 <span><a href="/addpost">Add a new one</a></span><br />
 %for article in posts:
+<span><a href="/editpost/{{ article[0] }}" title="edit this article">*Edit</a></span>
+<span><a href="/deletepost/{{ article[0] }}" title="dele this article">*Dele</a></span>
+<span>{{ article[0] }}</span>
 <span>{{ article[1] }}</span>
-<span><a href="/editpost/{{ article[0] }}" title="edit this article">&nbsp;&nbsp;*Edit</a></span>
-<span><a href="/deletepost/{{ article[0] }}" title="dele this article">&nbsp;&nbsp;*Dele</a></span><br />
+<br />
 %end
-</div><!--post-->
-
-</div>
-</div>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="/static/blog.js"></script>
+</div><!--end post-->
+</div><!--end main_content-->
+</div><!--end main_page-->
+<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="/static/blog.js"></script>-->
 </body>
 </html>

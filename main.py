@@ -6,6 +6,8 @@ from urllib import unquote
 from datetime import datetime
 from bottle import route, post, view, response, request, run, redirect, error, static_file
 
+post_per_page=5;
+
 def db_execute(sql_command, sql_parameter=''):
 	conn = sqlite3.connect('./blog.db')
 	conn.text_factory = str
@@ -47,11 +49,14 @@ def check_user():
 
 
 @route('/')
-@route('/show/<post_id:int>')
+@route('/show/<num:int>')
 @view('blog', template_settings={'noescape':True})
-def bloglist(post_id=0):
-	posts = db_execute("SELECT * FROM (SELECT * FROM posts WHERE id > ? ORDER BY date DESC) LIMIT 50", (post_id,))
-	return dict(posts=[(1,'tt',None,'','<a>cccc</a>')])
+def bloglist(num=0):
+#	if post_id == 0:
+#		posts = db_execute("SELECT * FROM (SELECT * FROM posts WHERE id > ? ORDER BY date DESC) LIMIT 5", (post_id,))
+#	else:
+	posts = db_execute("SELECT * FROM (SELECT * FROM posts ORDER BY date DESC) LIMIT '%d', '%d'"%(num, post_per_page))
+	return dict(posts=posts)
 
 @route('/sally')
 @route('/sally/show/<post_id:int>')
@@ -67,14 +72,19 @@ def blogrss():
 	response.content_type = 'xml/rss'
 	return dict(posts=posts)
 
-@route('list_comment')
-def list_comment(post_id='1'):
-	comments = db_execute('SELECT * FROM comments WHERE post_id=:1 ORDER BY date DESC', post_id)
+@route('/listcomment/<post_id:int>')
+@view('comments')
+def listcomment(post_id=1):
+	comments = db_execute('SELECT * FROM comments WHERE post_id=? ORDER BY date DESC', (post_id,))
 	return dict(comments=comments)
 
-@route('/add_comment')
-def add_comment(self):
-	return
+@post('/addcomment/<post_id:int>')
+def addcomment(post_id=1):
+		username = request.forms.get('username')
+		email = request.forms.get('email')
+		comment = request.forms.get('comment')
+		comments = db_execute("INSERT INTO comments (post_id, username, email, comment, date) VALUES ('%d', '%s', '%s', '%s', datetime('now'))"%(post_id, username, email, comment))
+		return "add ok"
 
 @route('/admin')
 @view('admin')
@@ -133,7 +143,7 @@ def guestbook():
 
 @route('/about')
 def about():
-	return static_file('about.html', root='./views/')
+	return static_file('about.tpl', root='./views/')
 
 def getqq():
 	req = urllib2.Request('http://v.t.qq.com/cgi-bin/weiboshow?f=s&tweetflag=1&fansflag=0&fansnum=30&name=reaky_yf&sign=c68092733fb05b975c2d13df9a9c936b85bfc53c&jsonp=?')
