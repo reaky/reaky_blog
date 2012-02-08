@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-import os, urllib2, sys
+import os, urllib2, sys, re
 import sqlite3
 import markdown2
 from urllib import unquote
 from datetime import datetime
-from bottle import route, post, view, response, request, run, redirect, error, static_file
+from bottle import route, post, view, template, response, request, run, redirect, error, static_file
 
 post_per_page=5;
 
@@ -47,23 +47,35 @@ def check_user():
 	else:
 		redirect('/norights')
 
-
 @route('/')
 @route('/show/<num:int>')
-@view('blog', template_settings={'noescape':True})
 def bloglist(num=0):
 #	if post_id == 0:
 #		posts = db_execute("SELECT * FROM (SELECT * FROM posts WHERE id > ? ORDER BY date DESC) LIMIT 5", (post_id,))
 #	else:
 	posts = db_execute("SELECT * FROM (SELECT * FROM posts ORDER BY date DESC) LIMIT '%d', '%d'"%(num, post_per_page))
-	return dict(posts=posts)
+#	return dict(posts=posts)
+	user_agent = request.get_header('User-Agent')
+	reStr = 'iPhone|iPod|iPad|Android|Windows Mobile|SymbianOS|NOKIA|SAMSUNG'
+	if (re.search(reStr, user_agent)):
+		return template('blog_mobile', posts=posts, template_settings={'noescape':True})
+	else:
+		return template('blog', posts=posts, template_settings={'noescape':True})
 
 @route('/sally')
 @route('/sally/show/<post_id:int>')
-@view('blog')
-def bloglist(post_id=0):
-	posts = db_execute("SELECT * FROM (SELECT * FROM posts WHERE id > ? ORDER BY date DESC) LIMIT 50", (post_id,))
-	return dict(posts=posts)
+@view('blog', template_settings={'noescape':True})
+def bloglist(num=0):
+	user_agent = request.get_header('User-Agent')
+	reStr = 'iPhone|iPod|iPad|Android|Windows Mobile|SymbianOS|NOKIA|SAMSUNG'
+	if (re.search(reStr, user_agent)):
+		print "mobile user"
+	else:
+		posts = db_execute("SELECT * FROM (SELECT * FROM posts ORDER BY date DESC) LIMIT '%d', '%d'"%(num, post_per_page))
+		return dict(posts=posts)
+#	if post_id == 0:
+#		posts = db_execute("SELECT * FROM (SELECT * FROM posts WHERE id > ? ORDER BY date DESC) LIMIT 5", (post_id,))
+#	else:
 
 @route('/rss.xml')
 @view('rss')
@@ -142,7 +154,9 @@ def guestbook():
 	return dict(posts=posts)
 
 @route('/about')
+@view('about')
 def about():
+	return dict()
 	return static_file('about.tpl', root='./views/')
 
 def getqq():

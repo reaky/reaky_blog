@@ -4,9 +4,31 @@ $(document).ready(function() {
 		window.history.pushState(null, document.title, $(this).attr('href'));
 		window.history.replaceState(null, null, $(this).attr('href'));
 		$('#main_content').load($(this).attr('href'));
+		$.get('/about', function(data) {
+			$('#main_content').html($(data).find('#about'));
+		});
 		return false;
 	});
-	$('.article_content').toggle(function() {
+	$('input').bind('focus', function() {
+		$(this).val(""); //if $(this).value = ''
+	});
+	$('.article_content').live('click', function() {
+		var toggled = $(this).data('toggled');
+		$(this).data('toggled', !toggled);
+		if (!toggled) {
+			key = $(this).siblings('.article_key').text();
+			$('#article_comment').hide('fast');
+			$('textarea').val('');
+			$('#comment_form').attr("action", "/addcomment/"+key);
+			$('#comments_posted').load('/listcomment/'+key);
+			$(this).after($('#article_comment'));
+			$('#article_comment').show('slow');
+		}
+		else {
+			$('#article_comment').hide('fast');
+		}
+	});
+	/*$('.article_content').toggle(function() {
 		key = $(this).siblings('.article_key').text();
 		$('#article_comment').hide('fast');
 		$('textarea').val('');
@@ -14,17 +36,14 @@ $(document).ready(function() {
 		$('#article_comment').show('slow');
 		$('#comment_form').attr("action", "/addcomment/"+key);
 		$('#comments_posted').load('/listcomment/'+key);
-		$('input').bind('focus', function() {
-			$(this).val("");
-		});
 	}, function() {
 		$('#article_comment').hide('fast');
-	});
+	});*/
 	$(window).scroll(function() {
 		var bodyTop = document.documentElement.scrollTop + document.body.scrollTop;
 		//滚动到底部时出发函数
 		//滚动的当前位置+窗口的高度 >= 整个body的高度
-		if(bodyTop+$(window).height()-25 >= $(document.body).height()){
+		if(bodyTop+$(window).height() >= $(document.body).height()){
 			//$('#main_content').load('/show/1');
 			//$('#main_content > div:last-child').after('<p>ss</p>');
 			num = $('#main_content').children('.article').length;

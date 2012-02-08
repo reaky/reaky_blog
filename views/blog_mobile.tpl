@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <title>Reaky yf</title>
 <link type="image/x-icon" href="/static/img/favicon.ico" rel="shortcut icon"/>
-<link type="text/css" rel="stylesheet" href="/static/blog.css" media="screen" />
+<link type="text/css" rel="stylesheet" href="/static/blog_mobile.css" media="screen" />
 </head>
 <body><div id="main_page">
 <div id="navi_bar">
@@ -49,9 +49,10 @@
 	<span>Powered by Python Bottle jQuery on iPad2</span>
 </div><!--end footer_bar-->
 </div><!--end main_page-->
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<!--<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>-->
 <!--<script type="text/javascript" src="/static/jquery-1.4.2.min.js"></script>-->
-<script type="text/javascript" src="/static/jquery.form.js"></script>
+<!--<script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>-->
 <script type="text/javascript" src="/static/blog.js"></script>
 <!--the start of the google analytics code-->
 <script type="text/javascript">

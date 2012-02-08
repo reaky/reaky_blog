@@ -1,15 +1,14 @@
 body {
-	background:transparent url(img/bg.jpg) no-repeat fixed left top;
+	background: grey no-repeat fixed left top;
 }
 
 #main_page {
 	background:#DDDDBB none repeat scroll 0% 0%;
 	font-family: Verdana, Helvetica, sans-serif;
 	font-size:16px;
-	margin: 5px 5px 5px 7%;
+	margin: 3px 0px;
 	padding: 0px;
 	text-align: left;
-	width: 600px;
 	filter:alpha(opacity=85);
 	-moz-opacity:0.85;
 	opacity: 0.85; 
