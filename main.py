@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-import os, urllib2, sys, re
+import os, urllib2, re
 import sqlite3
 import markdown2
-from urllib import unquote
 from datetime import datetime
 from bottle import route, post, view, template, response, request, run, redirect, error, static_file
 
@@ -121,14 +120,13 @@ def editpost(post_id=0):
 def updatepost(post_id=0):
 	check_user()
 	title = request.forms.get('title')
-	content = request.forms.get('postcontent')
+	content = markdown2.markdown(request.forms.get('postcontent'))
 	date = request.forms.get('date')
 	if date == '':
 		date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	#else:
 		#prevent wrong input
 		#date= datetime.strptime(date,"%Y-%m-%d")
-	content = unquote(markdown2.markdown(content.decode('utf-8')).encode('utf-8'))
 	if post_id == 0:
 		posts = db_execute("INSERT INTO posts (title, content, date) VALUES ('%s', '%s', datetime('%s'))"%(title, content, date))
 	else:
@@ -177,6 +175,5 @@ def error404(error):
 
 if __name__ == '__main__':
 	init_blog()
-	# Bind to PORT if defined, otherwise default to 5000.
-	port = int(os.environ.get('PORT', 8080))
-	run(host='0.0.0.0', port=port)
+	#port = int(os.environ.get('PORT', 8080))
+	run(host='0.0.0.0', port=int(sys.argv[1] if len(sys.argv) > 1 else 8080))

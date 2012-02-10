@@ -3,10 +3,10 @@ $(document).ready(function() {
 	$('#navi_about').click(function() {
 		window.history.pushState(null, document.title, $(this).attr('href'));
 		window.history.replaceState(null, null, $(this).attr('href'));
-		$('#main_content').load($(this).attr('href'));
 		$.get('/about', function(data) {
 			$('#main_content').html($(data).find('#about'));
 		});
+		$(window).unbind('scroll')
 		return false;
 	});
 	$('input').bind('focus', function() {

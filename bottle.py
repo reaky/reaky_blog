@@ -535,8 +535,8 @@ class Bottle(object):
         self.plugins = [] # List of installed plugins.
 
         self.error_handler = {}
-        #: If true, most exceptions are catched and returned as :exc:`HTTPError`
         self.config = ConfigDict(config or {})
+        #: If true, most exceptions are catched and returned as :exc:`HTTPError`
         self.catchall = catchall
         #: An instance of :class:`HooksPlugin`. Empty by default.
         self.hooks = HooksPlugin()
@@ -728,7 +728,13 @@ class Bottle(object):
         return wrapper
 
     def hook(self, name):
-        """ Return a decorator that attaches a callback to a hook. """
+        """ Return a decorator that attaches a callback to a hook. Three hooks
+            are currently implemented:
+
+            - before_request: Executed once before each request
+            - after_request: Executed once after each request
+            - app_reset: Called whenever :meth:`reset` is called.
+        """
         def wrapper(func):
             self.hooks.add(name, func)
             return func
@@ -877,7 +883,7 @@ class Bottle(object):
 ###############################################################################
 
 
-class BaseRequest(DictMixin):
+class BaseRequest(object):
     """ A wrapper for WSGI environment dictionaries that adds a lot of
         convenient access methods and properties. Most of them are read-only."""
 
@@ -1171,6 +1177,7 @@ class BaseRequest(DictMixin):
         """ Return a new :class:`Request` with a shallow :attr:`environ` copy. """
         return Request(self.environ.copy())
 
+    def get(self, value, default=None): return self.environ.get(value, default)
     def __getitem__(self, key): return self.environ[key]
     def __delitem__(self, key): self[key] = ""; del(self.environ[key])
     def __iter__(self): return iter(self.environ)
@@ -1243,9 +1250,9 @@ class BaseResponse(object):
     def __init__(self, body='', status=None, **headers):
         self._status_line = None
         self._status_code = None
-        self.body = body
         self._cookies = None
         self._headers = {'Content-Type': [self.default_content_type]}
+        self.body = body
         self.status = status or self.default_status
         if headers:
             for name, value in headers.items():
@@ -1439,16 +1446,43 @@ class BaseResponse(object):
             out += '%s: %s\n' % (name.title(), value.strip())
         return out
 
+#: Thread-local storage for :class:`LocalRequest` and :class:`LocalResponse`
+#: attributes.
+_lctx = threading.local()
 
-class LocalRequest(BaseRequest, threading.local):
-    ''' A thread-local subclass of :class:`BaseRequest`. '''
+def local_property(name, doc=None):
+
+    return property(
+        lambda self: getattr(_lctx, name),
+        lambda self, value: setattr(_lctx, name, value),
+        lambda self: delattr(_lctx, name),
+        doc or ('Thread-local property stored in :data:`_lctx.%s` ' % name)
+    )
+
+class LocalRequest(BaseRequest):
+    ''' A thread-local subclass of :class:`BaseRequest` with a different
+        set of attribues for each thread. There is usually only one global
+        instance of this class (:data:`request`). If accessed during a
+        request/response cycle, this instance always refers to the *current*
+        request (even on a multithreaded server). '''
     def __init__(self): pass
     bind = BaseRequest.__init__
+    environ = local_property('request_environ')
 
 
-class LocalResponse(BaseResponse, threading.local):
-    ''' A thread-local subclass of :class:`BaseResponse`. '''
+class LocalResponse(BaseResponse):
+    ''' A thread-local subclass of :class:`BaseResponse` with a different
+        set of attribues for each thread. There is usually only one global
+        instance of this class (:data:`response`). Its attributes are used
+        to build the HTTP response at the end of the request/response cycle.
+    '''
+    def __init__(self): pass
     bind = BaseResponse.__init__
+    _status_line = local_property('response_status_line')
+    _status_code = local_property('response_status_code')
+    _cookies     = local_property('response_cookies')
+    _headers     = local_property('response_headers')
+    body         = local_property('response_body')
 
 Response = LocalResponse # BC 0.9
 Request  = LocalRequest  # BC 0.9
@@ -1667,22 +1701,38 @@ class FormsDict(MultiDict):
     ''' This :class:`MultiDict` subclass is used to store request form data.
         Additionally to the normal dict-like item access methods (which return
         unmodified data as native strings), this container also supports
-        attribute-like access to its values. Attribues are automatiically de- or
-        recoded to match :attr:`input_encoding` (default: 'utf8'). Missing
+        attribute-like access to its values. Attributes are automatically de-
+        or recoded to match :attr:`input_encoding` (default: 'utf8'). Missing
         attributes default to an empty string. '''
 
     #: Encoding used for attribute values.
     input_encoding = 'utf8'
+    #: If true (default), unicode strings are first encoded with `latin1`
+    #: and then decoded to match :attr:`input_encoding`.
+    recode_unicode = True
+
+    def _fix(self, s, encoding=None):
+        if isinstance(s, unicode) and self.recode_unicode: # Python 3 WSGI
+            s = s.encode('latin1')
+        if isinstance(s, bytes): # Python 2 WSGI
+            return s.decode(encoding or self.input_encoding)
+        return s
+
+    def decode(self, encoding=None):
+        ''' Returns a copy with all keys and values de- or recoded to match
+            :attr:`input_encoding`. Some libraries (e.g. WTForms) want a
+            unicode dictionary. '''
+        copy = FormsDict()
+        enc = copy.input_encoding = encoding or self.input_encoding
+        copy.recode_unicode = False
+        for key, value in self.allitems():
+            copy.append(self._fix(key, enc), self._fix(value, enc))
+        return copy
 
     def getunicode(self, name, default=None, encoding=None):
-        value, enc = self.get(name, default), encoding or self.input_encoding
         try:
-            if isinstance(value, bytes): # Python 2 WSGI
-                return value.decode(enc)
-            elif isinstance(value, unicode): # Python 3 WSGI
-                return value.encode('latin1').decode(enc)
-            return value
-        except UnicodeError:
+            return self._fix(self[name], encoding)
+        except (UnicodeError, KeyError):
             return default
 
     def __getattr__(self, name, default=unicode()):
@@ -2420,6 +2470,7 @@ def run(app=None, server='wsgiref', host='127.0.0.1', port=8080,
     if NORUN: return
     if reloader and not os.environ.get('BOTTLE_CHILD'):
         try:
+            lockfile = None
             fd, lockfile = tempfile.mkstemp(prefix='bottle.', suffix='.lock')
             os.close(fd) # We only need this file to exist. We never write to it
             while os.path.exists(lockfile):
@@ -2504,7 +2555,7 @@ class FileCheckerThread(threading.Thread):
         mtime = lambda path: os.stat(path).st_mtime
         files = dict()
 
-        for module in sys.modules.values():
+        for module in list(sys.modules.values()):
             path = getattr(module, '__file__', '')
             if path[-4:] in ('.pyo', '.pyc'): path = path[:-1]
             if path and exists(path): files[path] = mtime(path)
@@ -2514,7 +2565,7 @@ class FileCheckerThread(threading.Thread):
             or mtime(self.lockfile) < time.time() - self.interval - 5:
                 self.status = 'error'
                 thread.interrupt_main()
-            for path, lmtime in files.items():
+            for path, lmtime in list(files.items()):
                 if not exists(path) or mtime(path) > lmtime:
                     self.status = 'reload'
                     thread.interrupt_main()
@@ -2976,11 +3027,14 @@ ERROR_PAGE_TEMPLATE = """
 %end
 """
 
-#: A thread-safe instance of :class:`Request` representing the `current` request.
-request = Request()
+#: A thread-safe instance of :class:`LocalRequest`. If accessed from within a 
+#: request callback, this instance always refers to the *current* request
+#: (even on a multithreaded server).
+request = LocalRequest()
 
-#: A thread-safe instance of :class:`Response` used to build the HTTP response.
-response = Response()
+#: A thread-safe instance of :class:`LocalResponse`. It is used to change the
+#: HTTP response for the *current* request.
+response = LocalResponse()
 
 #: A thread-safe namespace. Not used by Bottle.
 local = threading.local()
