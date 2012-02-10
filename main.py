@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, urllib2, re
+import os, sys, urllib2, re
 import sqlite3
 import markdown2
 from datetime import datetime
