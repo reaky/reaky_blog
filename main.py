@@ -175,5 +175,8 @@ def server_static(filename):
 def error404(error):
 	return 'Nothing here, sorry'
 
-init_blog()
-run(host='0.0.0.0', port=int(sys.argv[1] if len(sys.argv) > 1 else 80), reloader=True)
+if __name__ == '__main__':
+	init_blog()
+	# Bind to PORT if defined, otherwise default to 5000.
+	port = int(os.environ.get('PORT', 8080))
+	run(host='0.0.0.0', port=port)
