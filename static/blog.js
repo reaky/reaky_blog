@@ -15,35 +15,23 @@ $(document).ready(function() {
 		}
 	});
 	$('.article_content').live('click', function() {
-		var toggled = $(this).data('toggled');
-		$(this).data('toggled', !toggled);
-		if (!toggled) {
-			key = $(this).siblings('.article_key').text();
-			$('#article_comment').hide(0);
-			$('textarea').val('');
-			$('#comment_form').attr("action", "/addcomment/"+key);
-			$('#comments_posted').load('/listcomment/'+key);
-			$(this).after($('#article_comment'));
+		key = $(this).siblings('.article_key').text();
+		if (key == $('#article_comment').siblings('.article_key').text()) {
+			console.log(key);
+			$('#article_comment').toggle('slow');
+			return true;
+		}
+		$('#article_comment').hide();
+		$('textarea').val('');
+		$('#comment_form').attr("action", "/addcomment/"+key);
+		$(this).after($('#article_comment'));
+		$('#comments_posted').load('/listcomment/'+key, function() {
 			$('#article_comment').show('slow');
 			$('html, body').animate({
-				scrollTop: $('#article_comment').offset().top
+				scrollTop: $('#article_comment').offset().top - 100
 				},800);
-		}
-		else {
-			$('#article_comment').hide(0);
-		}
+		});
 	});
-	/*$('.article_content').toggle(function() {
-		key = $(this).siblings('.article_key').text();
-		$('#article_comment').hide('fast');
-		$('textarea').val('');
-		$(this).after($('#article_comment'));
-		$('#article_comment').show('slow');
-		$('#comment_form').attr("action", "/addcomment/"+key);
-		$('#comments_posted').load('/listcomment/'+key);
-	}, function() {
-		$('#article_comment').hide('fast');
-	});*/
 	var loading = false;
 	$(window).scroll(function() {
 		//judge if scroll to first post
@@ -52,7 +40,6 @@ $(document).ready(function() {
 			return false;
 		}
 		var bodyTop = document.documentElement.scrollTop + document.body.scrollTop;
-		var $buffer = $('<div />');
 		//滚动到底部时触发函数
 		//滚动的当前位置+窗口的高度 >= 整个body的高度
 		if (!loading &&(bodyTop+$(window).height() >= $(document.body).height())) {
@@ -67,35 +54,20 @@ $(document).ready(function() {
 			//	$(data).find('#main_content .article').fadein('slow').appendTo('#main_content');
 			//});
 			//copy from keakon.net
+			var $buffer = $('<div />');
 			$buffer.load('/show/'+num+' #main_content > .article', function(data) {
-				//alert('load ok?');
+				console.log('load ok?');
 				$buffer.children().appendTo('#main_content');
 				loading = false;
 			});
 		}
 	});
-	/*var loading = false;
-	$(window).scroll(function() {
-		var bodyTop = document.documentElement.scrollTop + document.body.scrollTop;
-		if (!loading &&(bodyTop+$(window).height() >= $(document.body).height())) {
-			loading = true;
-			//$('#main_content').load('/show/1');
-			//$('#main_content > div:last-child').after('<p>ss</p>');
-			num = $('#main_content').children('.article').length;
-			$.get('/show/'+num, function(data) {
-				$(data).find('#main_content .article').fadein('slow').appendTo('#main_content');
-			});
-		}
-		$(document).ready(function() {
-			loading = false;
-		});
-	});*/
 	$('#comment_form').ajaxForm(function() { 
 		var str = $('#comment_form').attr("action")+"";
 		str = str.replace("addcomment", "listcomment");
 		$('#comments_posted').load(str);
 		$('textarea').val('');
-		//alert('form ok');
+		console.log('ajax form ok');
 	});
 /*	$('#navpages > p > a').click(function() {
 		window.history.pushState(null, document.title, $(this).attr('href'));
