@@ -11,6 +11,7 @@
 	<ul>
 		<li><a id="navi_about" href="/about"><span>About</span></a></li>
 		<li><a id="navi_GooglePlus" href="https://plus.google.com/104418721144979799988"><span>+Reaky</span></a></li>
+		<li><a id="navi_github" href="https://github.com/reaky">GitHub</a></li>
 		<li><a id="navi_blog" href="/"><span>Blog</span></a></li>
 	</ul>
 </div>
@@ -27,12 +28,10 @@
 <div id="article_comment">
 <div id="comments_posted"></div><!--end comments_posted-->
 <form id="comment_form" action="/addcomment/1" method="post">
-<div>
-	<input type="text" name="username" value="Name" />
-	<input type="text" name="email" value="Email" />
-	<input name="submit" type="submit" value="Submit" />
-</div>
-<textarea name="comment" rows="" cols="" value="要不留下点什么？"></textarea>
+<input id="comment_user" type="text" name="username" value="Name" />
+<input id="comment_email" type="text" name="email" value="Email" />
+<input id="comment_submit" name="submit" type="submit" value="Submit" />
+<textarea id="comment_content" name="comment" rows="" cols="" value="要不留下点什么？"></textarea>
 </form><!--end comment_form-->
 </div><!--end article_comment-->
 </div><!--end main_content-->

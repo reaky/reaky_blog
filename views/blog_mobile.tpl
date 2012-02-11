@@ -11,6 +11,7 @@
 	<ul>
 		<li><a id="navi_about" href="/about"><span>About</span></a></li>
 		<li><a id="navi_GooglePlus" href="https://plus.google.com/104418721144979799988"><span>+Reaky</span></a></li>
+		<li><a id="navi_github" href="https://github.com/reaky">GitHub</a></li>
 		<li><a id="navi_blog" href="/"><span>Blog</span></a></li>
 	</ul>
 </div>
