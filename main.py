@@ -4,6 +4,7 @@ import sqlite3
 import markdown2
 from datetime import datetime
 from bottle import route, post, view, template, response, request, run, redirect, error, static_file
+from urllib import unquote
 
 post_per_page=5;
 
@@ -120,7 +121,11 @@ def editpost(post_id=0):
 def updatepost(post_id=0):
 	check_user()
 	title = request.forms.get('title')
-	content = markdown2.markdown(request.forms.get('postcontent'))
+	title = title.decode('utf-8').encode('utf-8')
+	content = request.forms.get('postcontent')
+#	content = markdown2.markdown(content)
+#	content = content.decode('utf-8').encode('utf-8')
+	content = unquote(markdown2.markdown(content.decode('utf-8').encode('utf-8')))
 	date = request.forms.get('date')
 	if date == '':
 		date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -128,7 +133,7 @@ def updatepost(post_id=0):
 		#prevent wrong input
 		#date= datetime.strptime(date,"%Y-%m-%d")
 	if post_id == 0:
-		posts = db_execute("INSERT INTO posts (title, content, date) VALUES ('%s', '%s', datetime('%s'))"%(title, content, date))
+		posts = db_execute("INSERT INTO posts (title, content, date) VALUES (u'%s', u'%s', datetime('%s'))"%(title, content, date))
 	else:
 		posts = db_execute("UPDATE posts SET title='%s', content='%s', date=datetime('%s') WHERE id='%d'"%(title, content, date, post_id))
 	redirect('/admin')
