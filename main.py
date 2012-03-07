@@ -1,15 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os, sys, urllib2, re
 import sqlite3
 import markdown2
 from datetime import datetime
-from bottle import route, post, view, template, response, request, run, redirect, error, static_file
 from urllib import unquote
+from bottle import route, post, view, template, response, request, run, redirect, error, static_file
 
-post_per_page=5;
+post_per_page=5
+blog_db_path='./blog.db'
 
 def db_execute(sql_command, sql_parameter=''):
-	conn = sqlite3.connect('./blog.db')
+	conn = sqlite3.connect(blog_db_path)
 	conn.text_factory = str
 	c = conn.cursor()
 	try:
@@ -23,7 +26,7 @@ def db_execute(sql_command, sql_parameter=''):
 	c.close()
 	return result
 def init_blog():
-	if os.path.isfile('./blog.db'):
+	if os.path.isfile(blog_db_path):
 		print 'file exist!'
 		return
 	db_execute('''CREATE TABLE posts(
@@ -121,11 +124,9 @@ def editpost(post_id=0):
 def updatepost(post_id=0):
 	check_user()
 	title = request.forms.get('title')
-	title = title.decode('utf-8').encode('utf-8')
+	title = title.decode('utf-8')
 	content = request.forms.get('postcontent')
-#	content = markdown2.markdown(content)
-#	content = content.decode('utf-8').encode('utf-8')
-	content = unquote(markdown2.markdown(content.decode('utf-8').encode('utf-8')))
+	content = markdown2.markdown(content.decode('utf-8'))
 	date = request.forms.get('date')
 	if date == '':
 		date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -133,7 +134,7 @@ def updatepost(post_id=0):
 		#prevent wrong input
 		#date= datetime.strptime(date,"%Y-%m-%d")
 	if post_id == 0:
-		posts = db_execute("INSERT INTO posts (title, content, date) VALUES (u'%s', u'%s', datetime('%s'))"%(title, content, date))
+		posts = db_execute("INSERT INTO posts (title, content, date) VALUES ('%s', '%s', datetime('%s'))"%(title, content, date))
 	else:
 		posts = db_execute("UPDATE posts SET title='%s', content='%s', date=datetime('%s') WHERE id='%d'"%(title, content, date, post_id))
 	redirect('/admin')
@@ -162,12 +163,12 @@ def about():
 	return dict()
 	return static_file('about.tpl', root='./views/')
 
+@route('/getqq')
 def getqq():
 	req = urllib2.Request('http://v.t.qq.com/cgi-bin/weiboshow?f=s&tweetflag=1&fansflag=0&fansnum=30&name=reaky_yf&sign=c68092733fb05b975c2d13df9a9c936b85bfc53c&jsonp=?')
 	req.add_header('Referer', 'http://v.t.qq.com/')
 	r = urllib2.urlopen(req)
 	content = r.read()
-	import re
 	response.out.write('var qq='+content[2:-1]+';')
 
 @route('/static/<filename:path:re:.*\.(css|js|ico|png|txt|html)>')
