@@ -1,15 +1,18 @@
-#!/usr/bin/env python
-import os, urllib2, sys, re
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os, sys, urllib2, re
 import sqlite3
 import markdown2
-from urllib import unquote
 from datetime import datetime
+from urllib import unquote
 from bottle import route, post, view, template, response, request, run, redirect, error, static_file
 
-post_per_page=5;
+post_per_page=5
+blog_db_path='./blog.db'
 
 def db_execute(sql_command, sql_parameter=''):
-	conn = sqlite3.connect('./blog.db')
+	conn = sqlite3.connect(blog_db_path)
 	conn.text_factory = str
 	c = conn.cursor()
 	try:
@@ -23,7 +26,7 @@ def db_execute(sql_command, sql_parameter=''):
 	c.close()
 	return result
 def init_blog():
-	if os.path.isfile('./blog.db'):
+	if os.path.isfile(blog_db_path):
 		print 'file exist!'
 		return
 	db_execute('''CREATE TABLE posts(
@@ -64,7 +67,7 @@ def bloglist(num=0):
 
 @route('/sally')
 @route('/sally/show/<post_id:int>')
-@view('blog', template_settings={'noescape':True})
+@view('blog')
 def bloglist(num=0):
 	user_agent = request.get_header('User-Agent')
 	reStr = 'iPhone|iPod|iPad|Android|Windows Mobile|SymbianOS|NOKIA|SAMSUNG'
@@ -121,14 +124,15 @@ def editpost(post_id=0):
 def updatepost(post_id=0):
 	check_user()
 	title = request.forms.get('title')
+	title = title.decode('utf-8')
 	content = request.forms.get('postcontent')
+	content = markdown2.markdown(content.decode('utf-8'))
 	date = request.forms.get('date')
 	if date == '':
 		date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	#else:
 		#prevent wrong input
 		#date= datetime.strptime(date,"%Y-%m-%d")
-	content = unquote(markdown2.markdown(content.decode('utf-8')).encode('utf-8'))
 	if post_id == 0:
 		posts = db_execute("INSERT INTO posts (title, content, date) VALUES ('%s', '%s', datetime('%s'))"%(title, content, date))
 	else:
@@ -159,12 +163,12 @@ def about():
 	return dict()
 	return static_file('about.tpl', root='./views/')
 
+@route('/getqq')
 def getqq():
 	req = urllib2.Request('http://v.t.qq.com/cgi-bin/weiboshow?f=s&tweetflag=1&fansflag=0&fansnum=30&name=reaky_yf&sign=c68092733fb05b975c2d13df9a9c936b85bfc53c&jsonp=?')
 	req.add_header('Referer', 'http://v.t.qq.com/')
 	r = urllib2.urlopen(req)
 	content = r.read()
-	import re
 	response.out.write('var qq='+content[2:-1]+';')
 
 @route('/static/<filename:path:re:.*\.(css|js|ico|png|txt|html)>')
@@ -177,6 +181,5 @@ def error404(error):
 
 if __name__ == '__main__':
 	init_blog()
-	# Bind to PORT if defined, otherwise default to 5000.
-	port = int(os.environ.get('PORT', 8080))
-	run(host='0.0.0.0', port=port)
+	#port = int(os.environ.get('PORT', 8080))
+	run(host='0.0.0.0', port=int(sys.argv[1] if len(sys.argv) > 1 else 8080))

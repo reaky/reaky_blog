@@ -1,5 +1,6 @@
 body {
 	background:transparent url(img/bg.jpg) no-repeat fixed left top;
+	line-height: 1.6;
 }
 
 #main_page {
@@ -27,26 +28,34 @@ body {
 	list-style: none;
 	margin: 10px;
 	font-size:23px;
-	text-shadow: 2px 2px 5px #CCC
+	text-shadow: 3px 3px 5px #CCC
+}
+#main_content {
+	margin:0px;
+	padding:0px;
 }
 .article {
 	margin: 10px 0px;
 	background: #ADDEEC none repeat scroll 0% 0%;
 }
 .article_key {
+	height:0px;
 	visibility: hidden;
 }
 .article_title {
 	margin:0px;
 	padding:5px;
 	background: #ecf6d1 none repeat scroll 0% 0%;
-	font-size:23px;
+	font-size:24px;
+	font-weight: 400;
+	font-family: Helvetica,"Microsoft YaHei",STHeiti,Georgia, "Times New Roman", Times, serif;
 }
 .article_time {
+	display: inline-block;
 	float: right;
-	margin: -38px 1px;
-	padding:0px;
-	font-size:24px;
+	margin: -40px 0px;
+	padding:5px 0px;
+	font-size:18px;
 }
 .article_time .article_time_month {
 	display: inline;
@@ -60,11 +69,10 @@ body {
 .article_content {
 	margin:0pt;
 	padding:5px;
-	font-size:15px;
-}
-#main_content {
-	margin:0px;
-	padding:0pt;
+	font-size:16px;
+	font-family: Helvetica,"Microsoft YaHei",STHeiti,Georgia,Times,Verdana,Arial,sans-serif;
+	text-align: justify;
+	line-height: 1.6;
 }
 .article_comment {
 	margin: 5px;
@@ -72,6 +80,7 @@ body {
 }
 .comment_body {
 	display:block;
+	height: 38px;
 	margin: 3px 2px;
 	font-size: 14px;
 }
@@ -80,13 +89,14 @@ body {
 	width: 50px;
 }
 .comment_date {
-	display:inline-block;
+	display: inline-block;
 	color: grey;
 	float: right;
 }
 .comment_content {
 	display:inline-block;
 	width: 350px;
+	height: 27px;
 	border-radius:3px;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
@@ -107,18 +117,33 @@ body {
 	left:-14px; 
 	bottom:3px;
 }
-.article_comment textarea {
-	margin: 2px;
-	width: 575px;
+#comment_form input {
+	border:2px solid #a2d7ec;
+	height: 20px;
+	width: 170px;
+	font-size: 16px;
+}
+#comment_content textarea {
+	display: block;
+	resize: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	padding: 2px;
+	width: 80%;
 	height: 182px;
+	border:2px solid #a2d7ec;
 }
-
-.article_comment input, textarea {
-	border-color:#9DC733;
-	border:1px solid #cce392;
+input:hover, textarea:hover {
+	border: 3px 0px solid #a2d7ec;
 }
-input:hover, textarea:hover {border-color:#9DC733;}
-input:focus, textarea:focus {background:#F4FBE7;}
+input:focus, textarea:focus {
+	border-style: 10px 0px solid #6fb6ea;
+	outline: 5px;
+}
+a:link {color: #0066cc;}
+a:visited {color: #794EAD;}
+a:hover {color: #1F3A87;}
+::selection {color: #fff;background-color: #639;}
 
 #footer_bar {
 	margin:0pt;

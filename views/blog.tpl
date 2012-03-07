@@ -11,6 +11,7 @@
 	<ul>
 		<li><a id="navi_about" href="/about"><span>About</span></a></li>
 		<li><a id="navi_GooglePlus" href="https://plus.google.com/104418721144979799988"><span>+Reaky</span></a></li>
+		<li><a id="navi_github" href="https://github.com/reaky">GitHub</a></li>
 		<li><a id="navi_blog" href="/"><span>Blog</span></a></li>
 	</ul>
 </div>
@@ -27,12 +28,10 @@
 <div id="article_comment">
 <div id="comments_posted"></div><!--end comments_posted-->
 <form id="comment_form" action="/addcomment/1" method="post">
-<div>
-	<input type="text" name="username" value="Name" />
-	<input type="text" name="email" value="Email" />
-	<input name="submit" type="submit" value="Submit" />
-</div>
-<textarea name="comment" rows="" cols="" value="要不留下点什么？"></textarea>
+<input id="comment_user" type="text" name="username" size="26" value="Name" tabindex="1" />
+<input id="comment_email" type="text" name="email" size="26" value="Email" tabindex="2" />
+<input id="comment_submit" name="submit" type="submit" value="Submit" tabindex="4" />
+<textarea id="comment_content" name="comment" rows="6" cols="80" value="要不留下点什么？" tabindex="3"></textarea>
 </form><!--end comment_form-->
 </div><!--end article_comment-->
 </div><!--end main_content-->
@@ -46,7 +45,7 @@
 		UTF-8 encoded.
 	</span><br />
 	<span>© 2008 reaky All rights reserved, all wrongs observed.</span><br />
-	<span>Powered by Python Bottle jQuery on iPad2</span>
+	<span>Powered by Python Bottle sqlite3 jQuery on iPad2</span>
 </div><!--end footer_bar-->
 </div><!--end main_page-->
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
