@@ -6,7 +6,8 @@ import sqlite3
 import markdown2
 from datetime import datetime
 from urllib import unquote
-from bottle import route, post, view, template, response, request, run, redirect, error, static_file
+from bottle import route, post, response, request, run, redirect, error, static_file
+from bottle import jinja2_view as view, jinja2_template as template
 
 post_per_page=5
 blog_db_path='./blog.db'
@@ -61,13 +62,13 @@ def bloglist(num=0):
 	user_agent = request.get_header('User-Agent')
 	reStr = 'iPhone|iPod|iPad|Android|Windows Mobile|SymbianOS|NOKIA|SAMSUNG'
 	if (re.search(reStr, user_agent)):
-		return template('blog_mobile', posts=posts, template_settings={'noescape':True})
+		return template('blog_mobile', posts=posts)
 	else:
-		return template('blog', posts=posts, template_settings={'noescape':True})
+		return template('blog', posts=posts)
 
 @route('/sally')
 @route('/sally/show/<post_id:int>')
-@view('blog', template_settings={'noescape':True})
+@view('blog')
 def bloglist(num=0):
 	user_agent = request.get_header('User-Agent')
 	reStr = 'iPhone|iPod|iPad|Android|Windows Mobile|SymbianOS|NOKIA|SAMSUNG'
