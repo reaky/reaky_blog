@@ -56,13 +56,15 @@ def bloglist(num=0):
 #	if post_id == 0:
 #		posts = db_execute("SELECT * FROM (SELECT * FROM posts WHERE id > ? ORDER BY date DESC) LIMIT 5", (post_id,))
 #	else:
-	posts = db_execute("SELECT * FROM (SELECT * FROM posts ORDER BY date DESC) LIMIT '%d', '%d'"%(num, post_per_page))
+#	posts = db_execute("SELECT * FROM (SELECT * FROM posts ORDER BY date DESC) LIMIT '%d', '%d'"%(num, post_per_page))
 #	return dict(posts=posts)
 	user_agent = request.get_header('User-Agent')
 	reStr = 'iPhone|iPod|iPad|Android|Windows Mobile|SymbianOS|NOKIA|SAMSUNG'
 	if (re.search(reStr, user_agent)):
-		return template('blog_mobile', posts=posts, template_settings={'noescape':True})
+		posts = db_execute("SELECT * FROM (SELECT * FROM posts ORDER BY date DESC) LIMIT '%d', '%d'"%(num, 1))
+		return template('mblog', posts=posts, num=num, template_settings={'noescape':True})
 	else:
+		posts = db_execute("SELECT * FROM (SELECT * FROM posts ORDER BY date DESC) LIMIT '%d', '%d'"%(num, post_per_page))
 		return template('blog', posts=posts, template_settings={'noescape':True})
 
 @route('/sally')

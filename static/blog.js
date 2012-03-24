@@ -44,7 +44,7 @@ $(document).ready(function() {
 		//滚动的当前位置+窗口的高度 >= 整个body的高度
 		if (!loading &&(bodyTop+$(window).height() >= $(document.body).height())) {
 			loading = true;
-			num = $('#main_content').children('.article').length;
+			num = $('#main_content').children('article').length;
 			//replace the content
 			//$('#main_content').load('/show/1');
 			//can not load dynamic content
@@ -55,8 +55,8 @@ $(document).ready(function() {
 			//});
 			//copy from keakon.net
 			var $buffer = $('<div />');
-			$buffer.load('/show/'+num+' #main_content > .article', function(data) {
-				console.log('load ok?');
+			$buffer.load('/show/'+num+' #main_content > article', function(data) {
+				console.log('load ok');
 				$buffer.children().appendTo('#main_content');
 				loading = false;
 			});

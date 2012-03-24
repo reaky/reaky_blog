@@ -1,13 +1,11 @@
 body {
 	background:#DDDDBB none repeat scroll 0% 0%;
-	background:transparent url(img/bg.jpg) no-repeat fixed left top;
 	font-family: Verdana, Helvetica, sans-serif;
 	font-size:16px;
 	line-height: 1.6;
-	margin: 5px 5px 5px 7%;
+	margin: 5px 10px;
 	padding: 0px;
 	text-align: left;
-	width: 600px;
 	filter:alpha(opacity=85);
 	-moz-opacity:0.85;
 	opacity: 0.85; 
@@ -128,6 +126,26 @@ footer {
 	text-align:center;
 	font-family:Arial,PmingLiu,sans-serif;
 	font-size:13px;
+}
+footer nav {
+	float: left;
+	width: 100%;
+	background: #BBD9EE;
+	line-height: normal;
+}
+#nav_prev {
+	display: inline-block;
+	float: left;
+	font-color: white;
+	font-size: 40px;
+	width:50%;
+}
+#nav_next {
+	display: inline-block;
+	float: right;
+	font-color: white;
+	font-size: 40px;
+	width:50%;
 }
 
 blockquote {
